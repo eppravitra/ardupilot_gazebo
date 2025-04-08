@@ -1638,12 +1638,16 @@ void gz::sim::systems::ArduPilotPlugin::UpdateMotorCommands(
                 const double pwm_max = this->dataPtr->controls[i].servo_max;
                 const double multiplier = this->dataPtr->controls[i].multiplier;
                 const double offset = this->dataPtr->controls[i].offset;
-
-                // bound incoming cmd between 0 and 1
-                double raw_cmd = (pwm - pwm_min)/(pwm_max - pwm_min);
-                raw_cmd = gz::math::clamp(raw_cmd, 0.0, 1.0);
-                this->dataPtr->controls[i].cmd =
-                    multiplier * (raw_cmd + offset);
+                
+                if  (pwm_min <= pwm && pwm <=pwm_max){
+                  // bound incoming cmd between 0 and 1
+                  double raw_cmd = (pwm - pwm_min)/(pwm_max - pwm_min);
+                  raw_cmd = gz::math::clamp(raw_cmd, 0.0, 1.0);
+                  this->dataPtr->controls[i].cmd =
+                          multiplier * (raw_cmd + offset);
+                }else{
+                  this->dataPtr->controls[i].cmd  = 0;
+                }
 
 #if 0
                 gzdbg << "apply input chan["
